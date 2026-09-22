@@ -1,0 +1,59 @@
+# Operating System Files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Environment & Secrets (Never commit secrets!)
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+*.cert
+
+# Node.js / Backend
+node_modules/
+dist/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.nyc_output/
+coverage/
+
+# Flutter / Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+build/
+*.lock
+!pubspec.lock
+!package-lock.json
+
+# Android / iOS / Windows build outputs
+android/app/debug/
+android/app/profile/
+android/app/release/
+*.apk
+*.aab
+ios/Flutter/Generated.xcconfig
+ios/Flutter/flutter_export_environment.sh
+windows/flutter/ephemeral/
+*.exe
+*.dll
+
+# IDE and Editor files
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Test and Log Files
+*.log
