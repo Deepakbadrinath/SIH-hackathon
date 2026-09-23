@@ -31,6 +31,32 @@
 
   <title>smriti_setu</title>
   <link rel="manifest" href="manifest.json">
+  <style>
+    /* Global Consistent Button & Clickable Element Cursor and Transitions */
+    * {
+      -webkit-tap-highlight-color: transparent;
+      box-sizing: border-box;
+    }
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #F8FAFC;
+    }
+    button, [role="button"], a, input[type="button"], input[type="submit"], select, .clickable {
+      cursor: pointer !important;
+      transition: transform 0.18s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    button:disabled, [role="button"][aria-disabled="true"], input:disabled {
+      cursor: not-allowed !important;
+      pointer-events: none !important;
+      opacity: 0.45;
+    }
+    flt-glass-pane {
+      outline: none;
+    }
+  </style>
 </head>
 <body>
   <!--

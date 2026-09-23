@@ -21,6 +21,18 @@ import '../../common_widgets/section_header.dart';
 class SihDemoScreen extends StatelessWidget {
   const SihDemoScreen({super.key});
 
+  void _handleExit(BuildContext context) {
+    try {
+      context.read<VoiceController?>()?.stopAll();
+    } catch (_) {}
+
+    if (Navigator.canPop(context)) {
+      Navigator.pop(context);
+    } else {
+      Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -42,13 +54,7 @@ class SihDemoScreen extends StatelessWidget {
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded, size: 30),
-          onPressed: () {
-            if (Navigator.canPop(context)) {
-              Navigator.pop(context);
-            } else {
-              Navigator.pushReplacementNamed(context, '/');
-            }
-          },
+          onPressed: () => _handleExit(context),
           tooltip: 'Return to application',
         ),
         actions: [
@@ -72,6 +78,11 @@ class SihDemoScreen extends StatelessWidget {
                 );
               }
             },
+          ),
+          IconButton(
+            icon: const Icon(Icons.close_rounded, size: 30),
+            tooltip: 'Exit SIH Demo',
+            onPressed: () => _handleExit(context),
           ),
           const SizedBox(width: AppSpacing.xs),
         ],
@@ -320,9 +331,7 @@ class SihDemoScreen extends StatelessWidget {
                 label: 'Return to Welcome Screen',
                 icon: Icons.home_rounded,
                 height: 56.0,
-                onPressed: () {
-                  Navigator.pushReplacementNamed(context, '/');
-                },
+                onPressed: () => _handleExit(context),
               ),
               const SizedBox(height: 24),
             ],

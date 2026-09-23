@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../../core/localization/app_localizations.dart';
 import '../../../core/theme/design_tokens.dart';
+import '../../../features/voice/presentation/controllers/voice_controller.dart';
 import '../../common_widgets/accessible_card.dart';
 import '../../common_widgets/disclaimer_banner.dart';
 import '../../common_widgets/large_text.dart';
@@ -18,7 +20,20 @@ class ElderlyHomeScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(context.l10n.translate('elderly_home.title')),
-        automaticallyImplyLeading: false,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_rounded, size: 30),
+          tooltip: context.l10n.translate('common.button.back'),
+          onPressed: () {
+            try {
+              context.read<VoiceController?>()?.stopAll();
+            } catch (_) {}
+            if (Navigator.canPop(context)) {
+              Navigator.pop(context);
+            } else {
+              Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+            }
+          },
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.settings_rounded, size: 30),

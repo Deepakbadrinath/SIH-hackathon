@@ -154,11 +154,32 @@ class SplashScreen extends StatelessWidget {
 
                     // Primary Action 3: SIH Grand Finale Interactive Demo Hub
                     OutlinedButton.icon(
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
-                        side: const BorderSide(color: Color(0xFFD97706), width: 2),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                        backgroundColor: const Color(0xFFFEF3C7).withValues(alpha: 0.5),
+                      style: ButtonStyle(
+                        padding: WidgetStateProperty.all(const EdgeInsets.symmetric(vertical: 16, horizontal: 20)),
+                        side: WidgetStateProperty.resolveWith((states) {
+                          if (states.contains(WidgetState.hovered) || states.contains(WidgetState.focused)) {
+                            return const BorderSide(color: Color(0xFFB45309), width: 2.5);
+                          }
+                          return const BorderSide(color: Color(0xFFD97706), width: 2);
+                        }),
+                        shape: WidgetStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(16))),
+                        backgroundColor: WidgetStateProperty.resolveWith((states) {
+                          if (states.contains(WidgetState.pressed)) {
+                            return const Color(0xFFFDE68A);
+                          }
+                          if (states.contains(WidgetState.hovered) || states.contains(WidgetState.focused)) {
+                            return const Color(0xFFFEF3C7);
+                          }
+                          return const Color(0xFFFEF3C7).withValues(alpha: 0.5);
+                        }),
+                        elevation: WidgetStateProperty.resolveWith((states) {
+                          if (states.contains(WidgetState.hovered) || states.contains(WidgetState.focused)) return 3.0;
+                          if (states.contains(WidgetState.pressed)) return 1.0;
+                          return 0.0;
+                        }),
+                        shadowColor: WidgetStateProperty.all(const Color(0x33D97706)),
+                        mouseCursor: WidgetStateProperty.all(SystemMouseCursors.click),
+                        animationDuration: const Duration(milliseconds: 180),
                       ),
                       icon: const Icon(Icons.stars_rounded, color: Color(0xFFD97706), size: 26),
                       label: const Text(

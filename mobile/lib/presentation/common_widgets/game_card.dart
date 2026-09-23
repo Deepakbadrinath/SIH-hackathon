@@ -129,12 +129,6 @@ class GameCard extends StatelessWidget {
                   'Play',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                ),
               ),
             ],
           ),

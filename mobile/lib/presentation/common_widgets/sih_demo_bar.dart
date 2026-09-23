@@ -6,6 +6,8 @@ import '../../features/caregiver/presentation/controllers/caregiver_controller.d
 import '../../features/demo/presentation/controllers/demo_controller.dart';
 import '../../features/elderly_home/presentation/controllers/elderly_home_controller.dart';
 import '../../features/offline_sync/presentation/controllers/sync_controller.dart';
+import '../../features/voice/presentation/controllers/voice_controller.dart';
+import 'app_hover_interactive.dart';
 
 /// Floating, collapsible control bar specifically built for SIH judges and presenters.
 /// Provides immediate, reliable simulation of network toggles, sync triggers, and instant demo data resets.
@@ -39,13 +41,16 @@ class SihDemoBar extends StatelessWidget {
           alignment: Alignment.bottomRight,
           child: Padding(
             padding: const EdgeInsets.only(right: 12.0, bottom: 12.0),
-            child: Material(
-              elevation: 6,
+            child: AppHoverInteractive(
+              onTap: () => demoCtrl?.toggleExpanded(),
               borderRadius: BorderRadius.circular(24),
-              color: isOffline ? const Color(0xFFDC2626) : const Color(0xFF0F3D78),
-              child: InkWell(
+              hoverGlowColor: isOffline
+                  ? const Color(0xFFEF4444).withValues(alpha: 0.4)
+                  : const Color(0xFF38BDF8).withValues(alpha: 0.4),
+              child: Material(
+                elevation: 6,
                 borderRadius: BorderRadius.circular(24),
-                onTap: () => demoCtrl?.toggleExpanded(),
+                color: isOffline ? const Color(0xFFDC2626) : const Color(0xFF0F3D78),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 8.0),
                   child: Row(
@@ -106,35 +111,42 @@ class SihDemoBar extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: isOffline ? const Color(0xFF7F1D1D) : const Color(0xFF1E3A8A),
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: Text(
-                          isOffline ? 'OFFLINE SIMULATION' : 'ONLINE MODE',
-                          style: TextStyle(
-                            color: isOffline ? const Color(0xFFFCA5A5) : const Color(0xFF93C5FD),
-                            fontWeight: FontWeight.w900,
-                            fontSize: 11,
-                            letterSpacing: 0.5,
+                  Flexible(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                          decoration: BoxDecoration(
+                            color: isOffline ? const Color(0xFF7F1D1D) : const Color(0xFF1E3A8A),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            isOffline ? 'OFFLINE SIMULATION' : 'ONLINE MODE',
+                            style: TextStyle(
+                              color: isOffline ? const Color(0xFFFCA5A5) : const Color(0xFF93C5FD),
+                              fontWeight: FontWeight.w900,
+                              fontSize: 10,
+                              letterSpacing: 0.3,
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 8),
-                      const Text(
-                        'SIH Demo Controls',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15,
+                        const SizedBox(width: 6),
+                        const Flexible(
+                          child: Text(
+                            'SIH Demo Controls',
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13,
+                            ),
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
+                  const SizedBox(width: 8),
                   Row(
                     children: [
                       ElevatedButton.icon(
@@ -151,16 +163,15 @@ class SihDemoBar extends StatelessWidget {
                         ),
                         onPressed: () {
                           demoCtrl?.toggleExpanded();
+                          try {
+                            context.read<VoiceController?>()?.stopAll();
+                          } catch (_) {}
                           NavigationKeys.rootNavigatorKey.currentState?.pushNamed('/demo');
                         },
                       ),
                       const SizedBox(width: 8),
-                      IconButton(
-                        icon: const Icon(Icons.close_rounded, color: Colors.white70, size: 22),
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
+                      _SihDemoCloseButton(
                         onPressed: () => demoCtrl?.toggleExpanded(),
-                        tooltip: 'Minimize demo panel',
                       ),
                     ],
                   ),
@@ -309,8 +320,54 @@ class SihDemoBar extends StatelessWidget {
         style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w600),
       ),
       onPressed: () {
+        try {
+          context.read<VoiceController?>()?.stopAll();
+        } catch (_) {}
         NavigationKeys.rootNavigatorKey.currentState?.pushNamed(route);
       },
+    );
+  }
+}
+
+class _SihDemoCloseButton extends StatefulWidget {
+  final VoidCallback? onPressed;
+
+  const _SihDemoCloseButton({this.onPressed});
+
+  @override
+  State<_SihDemoCloseButton> createState() => _SihDemoCloseButtonState();
+}
+
+class _SihDemoCloseButtonState extends State<_SihDemoCloseButton> {
+  bool _isHovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      child: GestureDetector(
+        onTap: widget.onPressed,
+        behavior: HitTestBehavior.opaque,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
+          width: 32,
+          height: 32,
+          decoration: BoxDecoration(
+            color: _isHovered
+                ? Colors.white.withValues(alpha: 0.15)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          alignment: Alignment.center,
+          child: Icon(
+            Icons.close_rounded,
+            color: _isHovered ? Colors.white : Colors.white70,
+            size: 20,
+          ),
+        ),
+      ),
     );
   }
 }

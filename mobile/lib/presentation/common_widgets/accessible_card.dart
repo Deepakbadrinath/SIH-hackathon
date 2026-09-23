@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'app_hover_interactive.dart';
 
 /// Accessible card container engineered for elderly users.
 /// Provides high-contrast borders, tactile padding, gentle elevation without glare,
@@ -70,13 +71,22 @@ class AccessibleCard extends StatelessWidget {
       ),
     );
 
+    final interactiveCard = onTap != null
+        ? AppHoverInteractive(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(20),
+            hoverGlowColor: effectiveBorder.withValues(alpha: isDark ? 0.35 : 0.18),
+            child: cardBody,
+          )
+        : cardBody;
+
     return Padding(
       padding: margin,
       child: Semantics(
         container: true,
         button: onTap != null,
         label: semanticLabel,
-        child: cardBody,
+        child: interactiveCard,
       ),
     );
   }

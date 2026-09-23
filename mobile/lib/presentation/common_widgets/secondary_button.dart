@@ -64,12 +64,50 @@ class SecondaryButton extends StatelessWidget {
         ),
         child: OutlinedButton(
           onPressed: onPressed,
-          style: OutlinedButton.styleFrom(
-            side: BorderSide(color: effectiveBorder, width: 2.5),
-            minimumSize: Size(isFullWidth ? double.infinity : 120.0, height),
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
+          style: ButtonStyle(
+            foregroundColor: WidgetStateProperty.resolveWith((states) {
+              if (states.contains(WidgetState.disabled)) {
+                return effectiveText.withValues(alpha: 0.38);
+              }
+              return effectiveText;
+            }),
+            backgroundColor: WidgetStateProperty.resolveWith((states) {
+              if (states.contains(WidgetState.disabled)) return Colors.transparent;
+              if (states.contains(WidgetState.pressed)) return effectiveBorder.withValues(alpha: 0.14);
+              if (states.contains(WidgetState.hovered) || states.contains(WidgetState.focused)) {
+                return effectiveBorder.withValues(alpha: 0.08);
+              }
+              return Colors.transparent;
+            }),
+            elevation: WidgetStateProperty.resolveWith((states) {
+              if (states.contains(WidgetState.hovered) || states.contains(WidgetState.focused)) return 2.0;
+              if (states.contains(WidgetState.pressed)) return 0.5;
+              return 0.0;
+            }),
+            shadowColor: WidgetStateProperty.all(effectiveBorder.withValues(alpha: 0.2)),
+            side: WidgetStateProperty.resolveWith((states) {
+              if (states.contains(WidgetState.disabled)) {
+                return BorderSide(color: effectiveBorder.withValues(alpha: 0.38), width: 2.0);
+              }
+              if (states.contains(WidgetState.hovered) || states.contains(WidgetState.focused)) {
+                return BorderSide(color: effectiveBorder, width: 2.5);
+              }
+              return BorderSide(color: effectiveBorder, width: 2.5);
+            }),
+            overlayColor: WidgetStateProperty.resolveWith((states) {
+              if (states.contains(WidgetState.pressed)) return effectiveBorder.withValues(alpha: 0.16);
+              if (states.contains(WidgetState.hovered)) return effectiveBorder.withValues(alpha: 0.06);
+              return null;
+            }),
+            mouseCursor: WidgetStateProperty.resolveWith((states) {
+              if (states.contains(WidgetState.disabled)) return SystemMouseCursors.basic;
+              return SystemMouseCursors.click;
+            }),
+            animationDuration: const Duration(milliseconds: 180),
+            minimumSize: WidgetStateProperty.all(Size(isFullWidth ? double.infinity : 120.0, height)),
+            padding: WidgetStateProperty.all(const EdgeInsets.symmetric(horizontal: 20, vertical: 14)),
+            shape: WidgetStateProperty.all(
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             ),
           ),
           child: content,

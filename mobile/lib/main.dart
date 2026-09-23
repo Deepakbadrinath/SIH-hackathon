@@ -79,6 +79,49 @@ void main() async {
   // Initialize App Configuration (Development by default)
   AppConfig.initialize(Environment.development);
 
+  FlutterError.onError = (FlutterErrorDetails details) {
+    FlutterError.presentError(details);
+    debugPrint('[FLUTTER ROOT ERROR] ${details.exceptionAsString()}');
+  };
+
+  ErrorWidget.builder = (FlutterErrorDetails details) {
+    return Scaffold(
+      body: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.error_outline_rounded, size: 64, color: Color(0xFFDC2626)),
+                const SizedBox(height: 16),
+                const Text(
+                  'Smriti Setu Recovery',
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'An unexpected visual state was encountered. Tap below to safely return to the home screen.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 16, color: Color(0xFF475569)),
+                ),
+                const SizedBox(height: 24),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    NavigationKeys.rootNavigatorKey.currentState
+                        ?.pushNamedAndRemoveUntil('/', (route) => false);
+                  },
+                  icon: const Icon(Icons.home_rounded),
+                  label: const Text('Return to Home'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  };
+
   // Core singletons
   final dbHelper = DatabaseHelper.instance;
   final secureStorage = SecureStorageService();
@@ -224,6 +267,34 @@ class SmritiSetuApp extends StatelessWidget {
           ? AccessibleTheme.getHighContrastTheme(fontScale: settingsCtrl.fontScale)
           : AccessibleTheme.getLightTheme(fontScale: settingsCtrl.fontScale),
       builder: (context, child) {
+        Widget effectiveChild = child ?? const SizedBox.shrink();
+        if (child == null) {
+          // If navigator popped all routes or hit null state, defensively auto-recover to root
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            NavigationKeys.rootNavigatorKey.currentState
+                ?.pushNamedAndRemoveUntil('/', (route) => false);
+          });
+          effectiveChild = Scaffold(
+            body: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const CircularProgressIndicator(),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Loading Smriti Setu...',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: settingsCtrl.highContrast ? Colors.white : const Color(0xFF0F3D78),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+
         return MediaQuery(
           data: MediaQuery.of(context).copyWith(
             textScaler: TextScaler.linear(settingsCtrl.fontScale),
@@ -232,7 +303,7 @@ class SmritiSetuApp extends StatelessWidget {
             textDirection: locCtrl.isRtl ? TextDirection.rtl : TextDirection.ltr,
             child: Stack(
               children: [
-                child ?? const SizedBox.shrink(),
+                effectiveChild,
                 const SihDemoBar(),
               ],
             ),
@@ -250,6 +321,7 @@ class SmritiSetuApp extends StatelessWidget {
         '/login': (context) => const LoginScreen(),
         '/elderly_home': (context) => const ElderlyHomeScreen(),
         '/patient': (context) => const ElderlyHomeScreen(),
+        '/home': (context) => const ElderlyHomeScreen(),
         '/games': (context) => const GamesScreen(),
         '/face_match': (context) => const FaceMatchScreen(),
         '/game/face_match': (context) => const FaceMatchScreen(),
@@ -268,12 +340,19 @@ class SmritiSetuApp extends StatelessWidget {
         '/language': (context) => const LanguageSelectionScreen(),
         '/voice_settings': (context) => const VoiceSettingsScreen(),
         '/caregiver': (context) => const CaregiverDashboardScreen(),
+        '/dashboard': (context) => const CaregiverDashboardScreen(),
+        '/caregiver_dashboard': (context) => const CaregiverDashboardScreen(),
         '/demo': (context) => const SihDemoScreen(),
         '/sih_demo': (context) => const SihDemoScreen(),
       },
       onUnknownRoute: (settings) {
+        debugPrint('[ROUTER] Unknown route requested: ${settings.name}');
         return MaterialPageRoute(
-          builder: (context) => const SihDemoScreen(),
+          builder: (context) => SplashScreen(
+            onLanguageChanged: (newLoc) => locCtrl.setLocale(newLoc),
+            onToggleTheme: () => settingsCtrl.toggleHighContrast(),
+            isHighContrast: settingsCtrl.highContrast,
+          ),
           settings: settings,
         );
       },

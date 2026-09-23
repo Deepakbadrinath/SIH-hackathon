@@ -50,7 +50,13 @@ class _CaregiverDashboardScreenState extends State<CaregiverDashboardScreen> {
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, size: 30),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () {
+            if (Navigator.canPop(context)) {
+              Navigator.pop(context);
+            } else {
+              Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+            }
+          },
         ),
       ),
       body: SafeArea(

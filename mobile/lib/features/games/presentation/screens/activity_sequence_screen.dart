@@ -8,6 +8,7 @@ import '../../../../presentation/common_widgets/large_text.dart';
 import '../../../../presentation/common_widgets/primary_button.dart';
 import '../../../../presentation/common_widgets/secondary_button.dart';
 import '../../../../presentation/common_widgets/voice_instruction_button.dart';
+import '../../../voice/presentation/controllers/voice_controller.dart';
 import '../controllers/activity_sequence_controller.dart';
 
 class ActivitySequenceScreen extends StatefulWidget {
@@ -29,6 +30,17 @@ class _ActivitySequenceScreenState extends State<ActivitySequenceScreen> {
     });
   }
 
+  void _safeExit(BuildContext context) {
+    try {
+      context.read<VoiceController?>()?.stopAll();
+    } catch (_) {}
+    if (Navigator.canPop(context)) {
+      Navigator.pop(context);
+    } else {
+      Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final ctrl = context.watch<ActivitySequenceController>();
@@ -40,7 +52,7 @@ class _ActivitySequenceScreenState extends State<ActivitySequenceScreen> {
         title: Text(context.l10n.translate('game.sequence.title')),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded, size: 30),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => _safeExit(context),
           tooltip: context.l10n.translate('common.button.back'),
         ),
       ),
@@ -576,7 +588,7 @@ class _ActivitySequenceScreenState extends State<ActivitySequenceScreen> {
             label: context.l10n.translate('results.home_button'),
             icon: Icons.home_rounded,
             height: 56.0,
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => _safeExit(context),
           ),
         ],
       ),

@@ -8,6 +8,7 @@ import '../../../../presentation/common_widgets/large_text.dart';
 import '../../../../presentation/common_widgets/primary_button.dart';
 import '../../../../presentation/common_widgets/secondary_button.dart';
 import '../../../../presentation/common_widgets/voice_instruction_button.dart';
+import '../../../voice/presentation/controllers/voice_controller.dart';
 import '../../domain/models/pattern_completion_models.dart';
 import '../controllers/pattern_completion_controller.dart';
 
@@ -30,6 +31,17 @@ class _PatternCompletionScreenState extends State<PatternCompletionScreen> {
     });
   }
 
+  void _safeExit(BuildContext context) {
+    try {
+      context.read<VoiceController?>()?.stopAll();
+    } catch (_) {}
+    if (Navigator.canPop(context)) {
+      Navigator.pop(context);
+    } else {
+      Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final ctrl = context.watch<PatternCompletionController>();
@@ -41,7 +53,7 @@ class _PatternCompletionScreenState extends State<PatternCompletionScreen> {
         title: Text(context.l10n.translate('game.pattern.title')),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded, size: 30),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => _safeExit(context),
           tooltip: context.l10n.translate('common.button.back'),
         ),
       ),
@@ -429,7 +441,7 @@ class _PatternCompletionScreenState extends State<PatternCompletionScreen> {
             label: context.l10n.translate('results.home_button'),
             icon: Icons.home_rounded,
             height: 56.0,
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => _safeExit(context),
           ),
         ],
       ),

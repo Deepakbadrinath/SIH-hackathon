@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
@@ -145,6 +146,64 @@ void main() {
       expect(demoController.isOfflineSimulated, isTrue);
       expect(find.text('Reconnect Network'), findsOneWidget);
       expect(find.text('OFFLINE SIMULATION'), findsOneWidget);
+    });
+
+    testWidgets('X close button minimizes panel and does not trigger any tooltip or modal overlay on hover', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: MultiProvider(
+            providers: [
+              ChangeNotifierProvider<DemoController>.value(value: demoController),
+            ],
+            child: const Scaffold(
+              body: Stack(
+                children: [
+                  Center(child: Text('Main App Content')),
+                  SihDemoBar(),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+
+      // Expand panel
+      if (!demoController.isExpanded) {
+        await tester.tap(find.text('SIH DEMO'));
+        await tester.pumpAndSettle();
+      }
+
+      expect(find.text('SIH Demo Controls'), findsOneWidget);
+
+      // Verify close button exists
+      final closeBtnFinder = find.byIcon(Icons.close_rounded);
+      expect(closeBtnFinder, findsOneWidget);
+
+      final initialModalBarriers = tester.widgetList(find.byType(ModalBarrier)).length;
+
+      // Hover over the X button
+      final gesture = await tester.createGesture(kind: PointerDeviceKind.mouse);
+      await gesture.addPointer(location: Offset.zero);
+      await gesture.moveTo(tester.getCenter(closeBtnFinder));
+      await tester.pump();
+
+      // Verify NO tooltip is shown and no new ModalBarrier is created
+      expect(find.byType(Tooltip), findsNothing);
+      expect(tester.widgetList(find.byType(ModalBarrier)).length, equals(initialModalBarriers));
+      expect(find.text('Main App Content'), findsOneWidget);
+
+      // Move mouse away
+      await gesture.moveTo(const Offset(10, 10));
+      await tester.pump();
+
+      // Tap the close button to minimize
+      await tester.tap(closeBtnFinder);
+      await tester.pumpAndSettle();
+
+      // Panel should now be minimized
+      expect(demoController.isExpanded, isFalse);
+      expect(find.text('SIH DEMO'), findsOneWidget);
+      expect(find.text('SIH Demo Controls'), findsNothing);
     });
   });
 }

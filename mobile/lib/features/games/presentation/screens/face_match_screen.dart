@@ -8,6 +8,7 @@ import '../../../../presentation/common_widgets/large_text.dart';
 import '../../../../presentation/common_widgets/primary_button.dart';
 import '../../../../presentation/common_widgets/secondary_button.dart';
 import '../../../../presentation/common_widgets/voice_instruction_button.dart';
+import '../../../voice/presentation/controllers/voice_controller.dart';
 import '../../../adaptive_difficulty/presentation/controllers/adaptive_difficulty_controller.dart';
 import '../../domain/models/face_match_models.dart';
 import '../controllers/face_match_controller.dart';
@@ -31,6 +32,17 @@ class _FaceMatchScreenState extends State<FaceMatchScreen> {
     });
   }
 
+  void _safeExit(BuildContext context) {
+    try {
+      context.read<VoiceController?>()?.stopAll();
+    } catch (_) {}
+    if (Navigator.canPop(context)) {
+      Navigator.pop(context);
+    } else {
+      Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final ctrl = context.watch<FaceMatchController>();
@@ -42,7 +54,7 @@ class _FaceMatchScreenState extends State<FaceMatchScreen> {
         title: Text(context.l10n.translate('game.face_match.title')),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded, size: 30),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => _safeExit(context),
           tooltip: context.l10n.translate('common.button.back'),
         ),
       ),
@@ -457,7 +469,7 @@ class _FaceMatchScreenState extends State<FaceMatchScreen> {
             label: context.l10n.translate('results.home_button'),
             icon: Icons.home_rounded,
             height: 56.0,
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => _safeExit(context),
           ),
         ],
       ),

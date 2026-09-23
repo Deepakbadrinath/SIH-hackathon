@@ -65,15 +65,45 @@ class PrimaryButton extends StatelessWidget {
         ),
         child: ElevatedButton(
           onPressed: onPressed,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: effectiveBg,
-            foregroundColor: effectiveFg,
-            minimumSize: Size(isFullWidth ? double.infinity : 140.0, height),
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
+          style: ButtonStyle(
+            backgroundColor: WidgetStateProperty.resolveWith((states) {
+              if (states.contains(WidgetState.disabled)) {
+                return effectiveBg.withValues(alpha: 0.38);
+              }
+              if (states.contains(WidgetState.hovered)) {
+                final hsl = HSLColor.fromColor(effectiveBg);
+                return hsl.withLightness((hsl.lightness + 0.04).clamp(0.0, 1.0)).toColor();
+              }
+              return effectiveBg;
+            }),
+            foregroundColor: WidgetStateProperty.resolveWith((states) {
+              if (states.contains(WidgetState.disabled)) {
+                return effectiveFg.withValues(alpha: 0.6);
+              }
+              return effectiveFg;
+            }),
+            elevation: WidgetStateProperty.resolveWith((states) {
+              if (states.contains(WidgetState.disabled)) return 0.0;
+              if (states.contains(WidgetState.pressed)) return 1.5;
+              if (states.contains(WidgetState.hovered) || states.contains(WidgetState.focused)) return 6.0;
+              return 3.0;
+            }),
+            shadowColor: WidgetStateProperty.all(effectiveBg.withValues(alpha: 0.35)),
+            overlayColor: WidgetStateProperty.resolveWith((states) {
+              if (states.contains(WidgetState.pressed)) return effectiveFg.withValues(alpha: 0.16);
+              if (states.contains(WidgetState.hovered)) return effectiveFg.withValues(alpha: 0.08);
+              return null;
+            }),
+            mouseCursor: WidgetStateProperty.resolveWith((states) {
+              if (states.contains(WidgetState.disabled)) return SystemMouseCursors.basic;
+              return SystemMouseCursors.click;
+            }),
+            animationDuration: const Duration(milliseconds: 180),
+            minimumSize: WidgetStateProperty.all(Size(isFullWidth ? double.infinity : 140.0, height)),
+            padding: WidgetStateProperty.all(const EdgeInsets.symmetric(horizontal: 24, vertical: 16)),
+            shape: WidgetStateProperty.all(
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             ),
-            elevation: 3,
           ),
           child: content,
         ),

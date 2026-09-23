@@ -15,8 +15,10 @@ class DemoController extends ChangeNotifier {
   DemoController({
     required NetworkInfo networkInfo,
     required DatabaseHelper dbHelper,
+    bool initialExpanded = false,
   })  : _networkInfo = networkInfo,
-        _dbHelper = dbHelper;
+        _dbHelper = dbHelper,
+        _isExpanded = initialExpanded || (kIsWeb && Uri.base.queryParameters['demo_panel'] == 'open');
 
   bool get isDemoModeActive => _isDemoModeActive;
   bool get isOfflineSimulated => _isOfflineSimulated;

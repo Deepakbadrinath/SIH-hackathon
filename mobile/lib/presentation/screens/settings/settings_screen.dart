@@ -22,7 +22,13 @@ class SettingsScreen extends StatelessWidget {
         title: Text(context.l10n.translate('settings.title')),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded, size: 30),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () {
+            if (Navigator.canPop(context)) {
+              Navigator.pop(context);
+            } else {
+              Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+            }
+          },
           tooltip: context.l10n.translate('common.button.back'),
         ),
       ),

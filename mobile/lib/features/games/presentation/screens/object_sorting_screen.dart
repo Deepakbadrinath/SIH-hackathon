@@ -8,6 +8,7 @@ import '../../../../presentation/common_widgets/large_text.dart';
 import '../../../../presentation/common_widgets/primary_button.dart';
 import '../../../../presentation/common_widgets/secondary_button.dart';
 import '../../../../presentation/common_widgets/voice_instruction_button.dart';
+import '../../../voice/presentation/controllers/voice_controller.dart';
 import '../../domain/models/object_sorting_models.dart';
 import '../controllers/object_sorting_controller.dart';
 
@@ -30,6 +31,17 @@ class _ObjectSortingScreenState extends State<ObjectSortingScreen> {
     });
   }
 
+  void _safeExit(BuildContext context) {
+    try {
+      context.read<VoiceController?>()?.stopAll();
+    } catch (_) {}
+    if (Navigator.canPop(context)) {
+      Navigator.pop(context);
+    } else {
+      Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final ctrl = context.watch<ObjectSortingController>();
@@ -41,7 +53,7 @@ class _ObjectSortingScreenState extends State<ObjectSortingScreen> {
         title: Text(context.l10n.translate('game.sorting.title')),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded, size: 30),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => _safeExit(context),
           tooltip: context.l10n.translate('common.button.back'),
         ),
       ),
@@ -462,7 +474,7 @@ class _ObjectSortingScreenState extends State<ObjectSortingScreen> {
             label: context.l10n.translate('results.home_button'),
             icon: Icons.home_rounded,
             height: 56.0,
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => _safeExit(context),
           ),
         ],
       ),

@@ -113,34 +113,126 @@ class AccessibleTheme {
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          minimumSize: const Size(64.0, AppConstants.minTouchTargetSize + 8),
-          backgroundColor: primaryBlue,
-          foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+        style: ButtonStyle(
+          minimumSize: WidgetStateProperty.all(const Size(64.0, AppConstants.minTouchTargetSize + 8)),
+          backgroundColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.disabled)) {
+              return primaryBlue.withValues(alpha: 0.38);
+            }
+            if (states.contains(WidgetState.hovered)) {
+              return const Color(0xFF134C94); // subtly brighter navy on hover
+            }
+            return primaryBlue;
+          }),
+          foregroundColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.disabled)) {
+              return Colors.white70;
+            }
+            return Colors.white;
+          }),
+          elevation: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.disabled)) return 0.0;
+            if (states.contains(WidgetState.pressed)) return 1.5;
+            if (states.contains(WidgetState.hovered) || states.contains(WidgetState.focused)) return 6.0;
+            return 3.0;
+          }),
+          shadowColor: WidgetStateProperty.all(const Color(0x330F3D78)),
+          overlayColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.pressed)) return Colors.white.withValues(alpha: 0.16);
+            if (states.contains(WidgetState.hovered)) return Colors.white.withValues(alpha: 0.08);
+            return null;
+          }),
+          mouseCursor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.disabled)) return SystemMouseCursors.basic;
+            return SystemMouseCursors.click;
+          }),
+          animationDuration: const Duration(milliseconds: 180),
+          padding: WidgetStateProperty.all(const EdgeInsets.symmetric(horizontal: 24, vertical: 16)),
+          shape: WidgetStateProperty.all(
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           ),
-          textStyle: TextStyle(
-            fontSize: baseBody,
-            fontWeight: FontWeight.bold,
+          textStyle: WidgetStateProperty.all(
+            TextStyle(fontSize: baseBody, fontWeight: FontWeight.bold),
           ),
-          elevation: 3,
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
-        style: OutlinedButton.styleFrom(
-          minimumSize: const Size(64.0, AppConstants.minTouchTargetSize + 8),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          side: const BorderSide(color: primaryBlue, width: 2.5),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+        style: ButtonStyle(
+          minimumSize: WidgetStateProperty.all(const Size(64.0, AppConstants.minTouchTargetSize + 8)),
+          foregroundColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.disabled)) {
+              return primaryBlue.withValues(alpha: 0.38);
+            }
+            return primaryBlue;
+          }),
+          backgroundColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.disabled)) return Colors.transparent;
+            if (states.contains(WidgetState.pressed)) return primaryBlue.withValues(alpha: 0.12);
+            if (states.contains(WidgetState.hovered) || states.contains(WidgetState.focused)) {
+              return primaryBlue.withValues(alpha: 0.06);
+            }
+            return Colors.transparent;
+          }),
+          elevation: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.hovered) || states.contains(WidgetState.focused)) return 2.0;
+            if (states.contains(WidgetState.pressed)) return 0.5;
+            return 0.0;
+          }),
+          shadowColor: WidgetStateProperty.all(const Color(0x220F3D78)),
+          side: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.disabled)) {
+              return BorderSide(color: primaryBlue.withValues(alpha: 0.38), width: 2.0);
+            }
+            if (states.contains(WidgetState.hovered) || states.contains(WidgetState.focused)) {
+              return const BorderSide(color: Color(0xFF134C94), width: 2.5);
+            }
+            return const BorderSide(color: primaryBlue, width: 2.5);
+          }),
+          overlayColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.pressed)) return primaryBlue.withValues(alpha: 0.14);
+            if (states.contains(WidgetState.hovered)) return primaryBlue.withValues(alpha: 0.06);
+            return null;
+          }),
+          mouseCursor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.disabled)) return SystemMouseCursors.basic;
+            return SystemMouseCursors.click;
+          }),
+          animationDuration: const Duration(milliseconds: 180),
+          padding: WidgetStateProperty.all(const EdgeInsets.symmetric(horizontal: 24, vertical: 16)),
+          shape: WidgetStateProperty.all(
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           ),
-          textStyle: TextStyle(
-            fontSize: baseBody,
-            fontWeight: FontWeight.bold,
-            color: primaryBlue,
+          textStyle: WidgetStateProperty.all(
+            TextStyle(fontSize: baseBody, fontWeight: FontWeight.bold, color: primaryBlue),
           ),
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: ButtonStyle(
+          mouseCursor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.disabled)) return SystemMouseCursors.basic;
+            return SystemMouseCursors.click;
+          }),
+          overlayColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.pressed)) return primaryBlue.withValues(alpha: 0.16);
+            if (states.contains(WidgetState.hovered)) return primaryBlue.withValues(alpha: 0.08);
+            return null;
+          }),
+          animationDuration: const Duration(milliseconds: 180),
+        ),
+      ),
+      iconButtonTheme: IconButtonThemeData(
+        style: ButtonStyle(
+          mouseCursor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.disabled)) return SystemMouseCursors.basic;
+            return SystemMouseCursors.click;
+          }),
+          overlayColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.pressed)) return primaryBlue.withValues(alpha: 0.16);
+            if (states.contains(WidgetState.hovered)) return primaryBlue.withValues(alpha: 0.08);
+            return null;
+          }),
+          animationDuration: const Duration(milliseconds: 180),
         ),
       ),
       cardTheme: CardThemeData(
@@ -263,34 +355,132 @@ class AccessibleTheme {
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          minimumSize: const Size(64.0, AppConstants.minTouchTargetSize + 12),
-          backgroundColor: darkAccentGold,
-          foregroundColor: Colors.black,
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-            side: const BorderSide(color: Colors.white, width: 2.5),
+        style: ButtonStyle(
+          minimumSize: WidgetStateProperty.all(const Size(64.0, AppConstants.minTouchTargetSize + 12)),
+          backgroundColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.disabled)) {
+              return darkAccentGold.withValues(alpha: 0.38);
+            }
+            if (states.contains(WidgetState.hovered)) {
+              return const Color(0xFFFDE047); // brighter amber/yellow on hover
+            }
+            return darkAccentGold;
+          }),
+          foregroundColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.disabled)) {
+              return Colors.black54;
+            }
+            return Colors.black;
+          }),
+          elevation: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.disabled)) return 0.0;
+            if (states.contains(WidgetState.pressed)) return 2.0;
+            if (states.contains(WidgetState.hovered) || states.contains(WidgetState.focused)) return 8.0;
+            return 4.0;
+          }),
+          shadowColor: WidgetStateProperty.all(const Color(0x66FACC15)),
+          overlayColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.pressed)) return Colors.black.withValues(alpha: 0.20);
+            if (states.contains(WidgetState.hovered)) return Colors.black.withValues(alpha: 0.08);
+            return null;
+          }),
+          side: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.hovered) || states.contains(WidgetState.focused)) {
+              return const BorderSide(color: Colors.white, width: 3.0);
+            }
+            return const BorderSide(color: Colors.white, width: 2.5);
+          }),
+          mouseCursor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.disabled)) return SystemMouseCursors.basic;
+            return SystemMouseCursors.click;
+          }),
+          animationDuration: const Duration(milliseconds: 180),
+          padding: WidgetStateProperty.all(const EdgeInsets.symmetric(horizontal: 24, vertical: 18)),
+          shape: WidgetStateProperty.all(
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           ),
-          textStyle: TextStyle(
-            fontSize: baseBody,
-            fontWeight: FontWeight.w900,
+          textStyle: WidgetStateProperty.all(
+            TextStyle(fontSize: baseBody, fontWeight: FontWeight.w900),
           ),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
-        style: OutlinedButton.styleFrom(
-          minimumSize: const Size(64.0, AppConstants.minTouchTargetSize + 12),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
-          side: const BorderSide(color: darkAccentGold, width: 3.0),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+        style: ButtonStyle(
+          minimumSize: WidgetStateProperty.all(const Size(64.0, AppConstants.minTouchTargetSize + 12)),
+          foregroundColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.disabled)) {
+              return darkAccentGold.withValues(alpha: 0.38);
+            }
+            return darkAccentGold;
+          }),
+          backgroundColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.disabled)) return Colors.transparent;
+            if (states.contains(WidgetState.pressed)) return darkAccentGold.withValues(alpha: 0.20);
+            if (states.contains(WidgetState.hovered) || states.contains(WidgetState.focused)) {
+              return darkAccentGold.withValues(alpha: 0.12);
+            }
+            return Colors.transparent;
+          }),
+          elevation: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.hovered) || states.contains(WidgetState.focused)) return 3.0;
+            if (states.contains(WidgetState.pressed)) return 1.0;
+            return 0.0;
+          }),
+          shadowColor: WidgetStateProperty.all(const Color(0x44FACC15)),
+          side: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.disabled)) {
+              return BorderSide(color: darkAccentGold.withValues(alpha: 0.38), width: 2.5);
+            }
+            if (states.contains(WidgetState.hovered) || states.contains(WidgetState.focused)) {
+              return const BorderSide(color: Color(0xFFFDE047), width: 3.5);
+            }
+            return const BorderSide(color: darkAccentGold, width: 3.0);
+          }),
+          overlayColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.pressed)) return darkAccentGold.withValues(alpha: 0.20);
+            if (states.contains(WidgetState.hovered)) return darkAccentGold.withValues(alpha: 0.10);
+            return null;
+          }),
+          mouseCursor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.disabled)) return SystemMouseCursors.basic;
+            return SystemMouseCursors.click;
+          }),
+          animationDuration: const Duration(milliseconds: 180),
+          padding: WidgetStateProperty.all(const EdgeInsets.symmetric(horizontal: 24, vertical: 18)),
+          shape: WidgetStateProperty.all(
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           ),
-          textStyle: TextStyle(
-            fontSize: baseBody,
-            fontWeight: FontWeight.w900,
-            color: darkAccentGold,
+          textStyle: WidgetStateProperty.all(
+            TextStyle(fontSize: baseBody, fontWeight: FontWeight.w900, color: darkAccentGold),
           ),
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: ButtonStyle(
+          mouseCursor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.disabled)) return SystemMouseCursors.basic;
+            return SystemMouseCursors.click;
+          }),
+          overlayColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.pressed)) return darkAccentGold.withValues(alpha: 0.20);
+            if (states.contains(WidgetState.hovered)) return darkAccentGold.withValues(alpha: 0.10);
+            return null;
+          }),
+          animationDuration: const Duration(milliseconds: 180),
+        ),
+      ),
+      iconButtonTheme: IconButtonThemeData(
+        style: ButtonStyle(
+          mouseCursor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.disabled)) return SystemMouseCursors.basic;
+            return SystemMouseCursors.click;
+          }),
+          overlayColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.pressed)) return darkAccentGold.withValues(alpha: 0.20);
+            if (states.contains(WidgetState.hovered)) return darkAccentGold.withValues(alpha: 0.10);
+            return null;
+          }),
+          animationDuration: const Duration(milliseconds: 180),
         ),
       ),
       cardTheme: CardThemeData(
